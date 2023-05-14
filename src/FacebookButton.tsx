@@ -5,7 +5,7 @@ const FacebookButton = ({ onLoginSuccess, onLoginFailure }: any) => {
   return (
     <FacebookLogin
       appId={process.env.REACT_APP_FACEBOOK_APP_ID || ""}
-      fields="name,email,picture"
+      fields="name,email"
       callback={onLoginSuccess}
       onFailure={onLoginFailure}
 
