@@ -101,6 +101,7 @@ const PageList = ({ pages, user }: PageListParams) => {
         const payload = {
           page_access_token: access_token,
           page_id: page_id,
+          user_id: user.id,
         };
 
         try {
@@ -118,7 +119,7 @@ const PageList = ({ pages, user }: PageListParams) => {
         alert(error.message);
       }
     },
-    [],
+    [user.id],
   );
 
   const RenderWebhook = useCallback(
