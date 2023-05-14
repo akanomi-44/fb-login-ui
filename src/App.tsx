@@ -52,12 +52,13 @@ const WebhookInput = ({
       };
 
       try {
-        await axios.post(URL + "set_webhook_url", {
+        const response = await axios.post(URL + "set_webhook_url", {
           body: JSON.stringify(payload),
           headers: {
             "Content-Type": "application/json",
           },
         });
+        alert("Đây là access token của server page " + response.data);
       } catch (error) {
         console.error(error);
       }
@@ -107,6 +108,8 @@ const App = () => {
   const [error, setError] = useState<any>(null);
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
+  const [update, setUpdate] = useState<number>(0);
+
   const handleLoginSuccess = useCallback(async (response: AccountResponse) => {
     await setJwt(response.accessToken);
     setUser({ email: response.email, id: response.id, name: response.name });
@@ -140,6 +143,8 @@ const App = () => {
             "Content-Type": "application/json",
           },
         });
+
+        setUpdate((update) => update++);
       } catch (error: any) {
         alert(error.message);
       }
@@ -187,7 +192,7 @@ const App = () => {
     if (user) {
       getWebhooks(user.id);
     }
-  }, [getWebhooks, user]);
+  }, [getWebhooks, user, update]);
 
   return (
     <div className="App">
