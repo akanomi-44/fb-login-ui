@@ -14,12 +14,6 @@ import {
   TextField,
 } from "@mui/material";
 
-interface PageListParams {
-  user: User;
-
-  pages: PageData[];
-}
-
 interface Webhook {
   page_id: string;
   webhook?: string;
@@ -87,8 +81,22 @@ const WebhookInput = ({
   );
 };
 
-const PageList = ({ pages, user }: PageListParams) => {
+const App = () => {
+  const [user, setUser] = useState<User>();
+  const [pages, setPages] = useState<PageData[]>([]);
+  const [error, setError] = useState<any>(null);
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+
+  const handleLoginSuccess = (response: AccountResponse) => {
+    console.log({ response });
+
+    setUser({ email: response.email, id: response.id, name: response.name });
+    setPages(response.accounts.data);
+  };
+
+  const handleLoginFailure = (response: any) => {
+    setError(response);
+  };
 
   const HandleInstall = useCallback(
     async (
@@ -98,28 +106,27 @@ const PageList = ({ pages, user }: PageListParams) => {
     ) => {
       event.preventDefault();
       try {
+        if (!user) {
+          return;
+        }
         const payload = {
           page_access_token: access_token,
           page_id: page_id,
           user_id: user.id,
         };
 
-        try {
-          await fetch(URL + "add_page_info", {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        } catch (error) {
-          console.error(error);
-        }
+        await fetch(URL + "add_page_info", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       } catch (error: any) {
         alert(error.message);
       }
     },
-    [user.id],
+    [user],
   );
 
   const RenderWebhook = useCallback(
@@ -168,64 +175,45 @@ const PageList = ({ pages, user }: PageListParams) => {
     }
   }, [getWebhooks, user]);
 
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <TableContainer
-      style={{
-        height: "50vh",
-        width: "50vw",
-        display: "flex",
-        alignContent: "center",
-        alignItems: "center",
-        justifyContent: "center",
-        marginLeft: "25%",
-        paddingTop: "10%",
-      }}>
-      <Table>
-        <TableHead>
-          <TableCell>Name</TableCell>
-          <TableCell>WebHook</TableCell>
-        </TableHead>
-        <TableBody>
-          {pages.map((page: any) => (
-            <TableRow key={page.id}>
-              <TableCell>
-                <a
-                  href={`https://www.facebook.com/${page.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  {page.name}
-                </a>
-              </TableCell>
-              <TableCell>{RenderWebhook(page.id, page.access_token)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-};
-
-const App = () => {
-  const [user, setUser] = useState<User>();
-  const [pages, setPages] = useState<PageData[]>([]);
-  const [error, setError] = useState<any>(null);
-
-  const handleLoginSuccess = (response: AccountResponse) => {
-    setUser({ email: response.email, id: response.id, name: response.name });
-    setPages(response.accounts.data);
-  };
-
-  const handleLoginFailure = (response: any) => {
-    setError(response);
-  };
-
   return (
     <div className="App">
-      {user && pages ? <PageList user={user} pages={pages} /> : <></>}
+      {user && pages ? (
+        <TableContainer
+          style={{
+            height: "50vh",
+            width: "50vw",
+            display: "flex",
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            marginLeft: "25%",
+            paddingTop: "10%",
+          }}>
+          <Table>
+            <TableHead>
+              <TableCell>Name</TableCell>
+              <TableCell>WebHook</TableCell>
+            </TableHead>
+            <TableBody>
+              {pages.map((page: any) => (
+                <TableRow key={page.id}>
+                  <TableCell>
+                    <a
+                      href={`https://www.facebook.com/${page.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer">
+                      {page.name}
+                    </a>
+                  </TableCell>
+                  <TableCell>{RenderWebhook(page.id, page.access_token)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <></>
+      )}
       {!user ? (
         <header className="App-header">
           <FacebookButton onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />
