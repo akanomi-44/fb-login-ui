@@ -13,6 +13,7 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
+import axios from "axios";
 
 interface Webhook {
   page_id: string;
@@ -51,8 +52,7 @@ const WebhookInput = ({
       };
 
       try {
-        await fetch(URL + "set_webhook_url", {
-          method: "POST",
+        await axios.post(URL + "set_webhook_url", {
           body: JSON.stringify(payload),
           headers: {
             "Content-Type": "application/json",
@@ -81,18 +81,37 @@ const WebhookInput = ({
   );
 };
 
+const setAuthHeader = (token: string | null) => {
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete axios.defaults.headers.common["Authorization"];
+  }
+};
+
+const setJwt = async (accessToken: string) => {
+  try {
+    const response = await axios.post(`${URL}/auth/facebook`, {
+      access_token: accessToken,
+    });
+    const { token } = response.data;
+    setAuthHeader(token);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const App = () => {
   const [user, setUser] = useState<User>();
   const [pages, setPages] = useState<PageData[]>([]);
   const [error, setError] = useState<any>(null);
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
-  const handleLoginSuccess = (response: AccountResponse) => {
-    console.log({ response });
-
+  const handleLoginSuccess = useCallback(async (response: AccountResponse) => {
+    await setJwt(response.accessToken);
     setUser({ email: response.email, id: response.id, name: response.name });
     setPages(response.accounts.data);
-  };
+  }, []);
 
   const handleLoginFailure = (response: any) => {
     setError(response);
@@ -115,8 +134,7 @@ const App = () => {
           user_id: user.id,
         };
 
-        await fetch(URL + "add_page_info", {
-          method: "POST",
+        await axios.post(URL + "add_page_info", {
           body: JSON.stringify(payload),
           headers: {
             "Content-Type": "application/json",
@@ -151,17 +169,13 @@ const App = () => {
   );
   const getWebhooks = useCallback(async (userId: string) => {
     try {
-      const response = await fetch(`https://api.myecomer.me/getWebhooks?userId=${userId}`, {
-        method: "GET", // *GET, POST, PUT, DELETE, etc.
-
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
+      const response = await axios.get(`https://api.myecomer.me/getWebhooks?userId=${userId}`, {
         headers: {
           "Content-Type": "application/json",
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-      const data = await response.json(); //
+      const { data } = response;
       console.log(data);
       setWebhooks(data.pages);
     } catch (error: any) {

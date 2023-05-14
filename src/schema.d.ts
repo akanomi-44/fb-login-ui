@@ -12,6 +12,7 @@ export interface AccountResponse {
   picture: Picture;
   accounts: Accounts;
   id: string;
+  accessToken: string;
 }
 
 export interface Accounts {
