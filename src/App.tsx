@@ -88,7 +88,6 @@ const WebhookInput = ({
 };
 
 const PageList = ({ pages, user }: PageListParams) => {
-  const [error, setError] = useState<any>(null);
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
   const HandleInstall = useCallback(
@@ -116,7 +115,7 @@ const PageList = ({ pages, user }: PageListParams) => {
           console.error(error);
         }
       } catch (error: any) {
-        setError(error.message);
+        alert(error.message);
       }
     },
     [],
@@ -140,7 +139,7 @@ const PageList = ({ pages, user }: PageListParams) => {
         <WebhookInput webhook={webhook[0].webhook} access_token={access_token} page_id={pageId} />
       );
     },
-    [webhooks],
+    [HandleInstall, webhooks],
   );
   const getWebhooks = useCallback(async (userId: string) => {
     try {
@@ -158,9 +157,7 @@ const PageList = ({ pages, user }: PageListParams) => {
       console.log(data);
       setWebhooks(data.pages);
     } catch (error: any) {
-      console.log(error);
-
-      setError(error.message);
+      alert(error.message);
     }
   }, []);
 
