@@ -2854,6 +2854,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-facebook-login@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "@types/react-facebook-login@npm:4.1.5"
+  dependencies:
+    "@types/react": "*"
+  checksum: eff7dc793f246031422ca2679298b73158c63f807b39f8e8320475ee5765bd38f0dc6362b366d9f4637165827722d86fdf2398d83d7321079b981cda86d6c46f
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:^18.0.0":
   version: 18.2.6
   resolution: "@types/react@npm:18.2.6"
@@ -5293,6 +5302,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:^16.0.3":
+  version: 16.0.3
+  resolution: "dotenv@npm:16.0.3"
+  checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:^0.1.2":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -6096,8 +6112,11 @@ __metadata:
     "@types/node": ^16.7.13
     "@types/react": ^18.0.0
     "@types/react-dom": ^18.0.0
+    "@types/react-facebook-login": ^4.1.5
+    dotenv: ^16.0.3
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-facebook-login: ^4.1.1
     react-scripts: 5.0.1
     typescript: ^4.4.2
     web-vitals: ^2.1.0
@@ -10608,6 +10627,15 @@ __metadata:
   version: 6.0.11
   resolution: "react-error-overlay@npm:6.0.11"
   checksum: ce7b44c38fadba9cedd7c095cf39192e632daeccf1d0747292ed524f17dcb056d16bc197ddee5723f9dd888f0b9b19c3b486c430319e30504289b9296f2d2c42
+  languageName: node
+  linkType: hard
+
+"react-facebook-login@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "react-facebook-login@npm:4.1.1"
+  peerDependencies:
+    react: ^16.0.0
+  checksum: e644da474c6bf308e9a862c55397d61fd876a088345f3e9d234ec457eb3c205d1deb1263c5000005adfc1899bf6774cf761ee670c33bd6b0887f0dfd3bdff957
   languageName: node
   linkType: hard
 
