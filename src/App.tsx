@@ -110,11 +110,31 @@ const App = () => {
 
   const [update, setUpdate] = useState<number>(0);
 
-  const handleLoginSuccess = useCallback(async (response: AccountResponse) => {
-    await setJwt(response.accessToken);
-    setUser({ email: response.email, id: response.id, name: response.name });
-    setPages(response.accounts.data);
+  const getWebhooks = useCallback(async (userId: string) => {
+    try {
+      const response = await axios.get(`https://api.myecomer.me/getWebhooks?userId=${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      const { data } = response;
+      console.log(data);
+      setWebhooks(data.pages);
+    } catch (error: any) {
+      alert(error.message);
+    }
   }, []);
+
+  const handleLoginSuccess = useCallback(
+    async (response: AccountResponse) => {
+      await setJwt(response.accessToken);
+      setUser({ email: response.email, id: response.id, name: response.name });
+      setPages(response.accounts.data);
+      await getWebhooks(response.id);
+    },
+    [getWebhooks],
+  );
 
   const handleLoginFailure = (response: any) => {
     setError(response);
@@ -172,24 +192,9 @@ const App = () => {
     },
     [HandleInstall, webhooks],
   );
-  const getWebhooks = useCallback(async (userId: string) => {
-    try {
-      const response = await axios.get(`https://api.myecomer.me/getWebhooks?userId=${userId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      const { data } = response;
-      console.log(data);
-      setWebhooks(data.pages);
-    } catch (error: any) {
-      alert(error.message);
-    }
-  }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && update > 0) {
       getWebhooks(user.id);
     }
   }, [getWebhooks, user, update]);
