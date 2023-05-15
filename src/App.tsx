@@ -119,9 +119,8 @@ const App = () => {
         },
       });
       const { data } = response;
-      console.log(data);
 
-      setWebhooks(data);
+      setWebhooks(data.pages);
     } catch (error: any) {
       alert(error.message);
     }
