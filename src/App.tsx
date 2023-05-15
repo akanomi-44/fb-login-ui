@@ -119,6 +119,8 @@ const App = () => {
         },
       });
       const { data } = response;
+      console.log(data);
+
       setWebhooks(data);
     } catch (error: any) {
       alert(error.message);
@@ -173,8 +175,8 @@ const App = () => {
 
   const RenderWebhook = useCallback(
     (pageId: string, access_token: string) => {
-      const webhook = webhooks.filter((webhook) => webhook.page_id === pageId);
-      if (!webhook.length) {
+      const webhook = webhooks?.filter((webhook) => webhook.page_id === pageId);
+      if (!webhook.length || !webhook) {
         return (
           <Button
             variant="outlined"
