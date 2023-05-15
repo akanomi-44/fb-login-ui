@@ -58,7 +58,8 @@ const WebhookInput = ({
             "Content-Type": "application/json",
           },
         });
-        alert("Đây là access token của server page " + response.data);
+        const { token } = response.data;
+        alert("Đây là access token của server page " + token);
       } catch (error) {
         console.error(error);
       }
