@@ -92,7 +92,7 @@ const setAuthHeader = (token: string | null) => {
 
 const setJwt = async (accessToken: string) => {
   try {
-    const response = await axios.post(`${URL}/auth/facebook`, {
+    const response = await axios.post(`${URL}auth/facebook`, {
       access_token: accessToken,
     });
     const { token } = response.data;
