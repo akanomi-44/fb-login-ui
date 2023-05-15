@@ -108,8 +108,6 @@ const App = () => {
   const [error, setError] = useState<any>(null);
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
 
-  const [update, setUpdate] = useState<number>(0);
-
   const getWebhooks = useCallback(async (userId: string) => {
     try {
       const response = await axios.get(`https://api.myecomer.me/getWebhooks?userId=${userId}`, {
@@ -164,12 +162,12 @@ const App = () => {
           },
         });
 
-        setUpdate((update) => update++);
+        getWebhooks(user.id);
       } catch (error: any) {
         alert(error.message);
       }
     },
-    [user],
+    [getWebhooks, user],
   );
 
   const RenderWebhook = useCallback(
@@ -194,10 +192,10 @@ const App = () => {
   );
 
   useEffect(() => {
-    if (user && update > 0) {
+    if (user) {
       getWebhooks(user.id);
     }
-  }, [getWebhooks, user, update]);
+  }, [getWebhooks, user]);
 
   return (
     <div className="App">
