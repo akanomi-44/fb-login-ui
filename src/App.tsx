@@ -84,7 +84,7 @@ const WebhookInput = ({
 
 const setAuthHeader = (token: string | null) => {
   if (token) {
-    axios.defaults.headers.common["Authorization"] = `${token}`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
@@ -119,8 +119,7 @@ const App = () => {
         },
       });
       const { data } = response;
-      console.log(data);
-      setWebhooks(data.pages);
+      setWebhooks(data);
     } catch (error: any) {
       alert(error.message);
     }
