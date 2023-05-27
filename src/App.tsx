@@ -14,57 +14,65 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Paper } from "@mui/material";
 
-interface Webhook {
+interface PageInfo {
   page_id: string;
   webhook?: string;
+  location?: string;
+  field?: string;
+  shop_link?: string;
 }
 
 const URL = "https://api.myecomer.me/";
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: "#757ce8",
+      main: "#3f50b5",
+      dark: "#002884",
+      contrastText: "#fff",
+    },
+    secondary: {
+      light: "#ff7961",
+      main: "#f44336",
+      dark: "#ba000d",
+      contrastText: "#000",
+    },
+  },
+  typography: {
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+  },
+});
+
 const WebhookInput = ({
-  access_token,
-  page_id,
   webhook,
+  onChange,
 }: {
-  access_token: string;
   webhook?: string;
-  page_id: string;
+  onChange: (newValue: string) => void;
 }) => {
-  const [text, setText] = useState<string>();
-  const handleUpdateText = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    if (event.target.value) {
-      setText(event.target.value);
-    }
-  }, []);
-
   const handleUpdateWebhook = useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       event.preventDefault();
-      if (!text) {
-        return;
-      }
-
-      const payload = {
-        page_webhook_url: text,
-        page_id: page_id,
-      };
-
-      try {
-        const response = await axios.post(URL + "set_webhook_url", {
-          body: JSON.stringify(payload),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const { token } = response.data;
-        alert("Đây là access token của server page " + token);
-      } catch (error) {
-        console.error(error);
+      if (event.target.value) {
+        onChange(event.target.value);
       }
     },
-    [page_id, text],
+    [onChange],
   );
 
   return (
@@ -72,13 +80,173 @@ const WebhookInput = ({
       <TextField
         id="filled-basic"
         label="Webhook"
-        value={text}
-        defaultValue={webhook}
+        value={webhook}
+        defaultValue={webhook || "Enter HTTPS URL"}
         variant="filled"
-        onChange={handleUpdateText}
+        onChange={handleUpdateWebhook}
         style={{ color: "white!" }}
       />
-      <Button onClick={handleUpdateWebhook}>Save</Button>
+    </>
+  );
+};
+const LocationInput = ({
+  location,
+  onChange,
+}: {
+  location?: string;
+  onChange: (newValue: string) => void;
+}) => {
+  const handleUpdateLocationText = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault();
+      if (event.target.value) {
+        onChange(event.target.value);
+      }
+    },
+    [onChange],
+  );
+
+  return (
+    <>
+      <TextField
+        id="filled-basic"
+        label="location"
+        value={location}
+        defaultValue={location || "Enter your shop location"}
+        variant="filled"
+        onChange={handleUpdateLocationText}
+        style={{ color: "white!" }}
+      />
+    </>
+  );
+};
+const ShopLinkInput = ({
+  shop_link,
+  onChange,
+}: {
+  shop_link?: string;
+  onChange: (newValue: string) => void;
+}) => {
+  const handleUpdateShopLinkText = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault();
+      if (event.target.value) {
+        onChange(event.target.value);
+      }
+    },
+    [onChange],
+  );
+
+  return (
+    <>
+      <TextField
+        id="filled-basic"
+        label="shop_link"
+        value={shop_link}
+        defaultValue={shop_link || "Enter your Shop link"}
+        variant="filled"
+        onChange={handleUpdateShopLinkText}
+        style={{ color: "white!" }}
+      />
+    </>
+  );
+};
+const FieldInput = ({
+  field,
+  onChange,
+}: {
+  field?: string;
+  onChange: (newValue: string) => void;
+}) => {
+  const handleUpdateFieldText = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault();
+      if (event.target.value) {
+        onChange(event.target.value);
+      }
+    },
+    [onChange],
+  );
+
+  return (
+    <>
+      <TextField
+        id="filled-basic"
+        label="field"
+        value={field}
+        defaultValue={field || "Enter your Shop's field"}
+        variant="filled"
+        onChange={handleUpdateFieldText}
+        style={{ color: "white!" }}
+      />
+    </>
+  );
+};
+
+const RenderPageInfo = ({
+  pageId,
+  access_token,
+  pageInfos,
+  handleUpdatePageInfo,
+  handleInstall,
+}: {
+  pageId: string;
+  access_token: string;
+  pageInfos: PageInfo[];
+  handleUpdatePageInfo: (
+    e: any,
+    page_id: string,
+    webhookText?: string,
+    locationText?: string,
+    shopLink?: string,
+    fieldText?: string,
+  ) => void;
+  handleInstall: (e: any, pageId: string, access_token: string) => void;
+}) => {
+  const [webhookText, setWebhookText] = useState<string | undefined>();
+  const [locationText, setLocationText] = useState<string | undefined>();
+  const [shopLink, setShopLink] = useState<string | undefined>();
+  const [fieldText, setFieldText] = useState<string | undefined>();
+
+  const pageInfo = pageInfos?.filter((webhook) => webhook.page_id === pageId);
+
+  return (
+    <>
+      <TableCell>
+        <WebhookInput webhook={webhookText || pageInfo[0].webhook} onChange={setWebhookText} />
+      </TableCell>
+      <TableCell>
+        <ShopLinkInput shop_link={shopLink || pageInfo?.[0]?.shop_link} onChange={setShopLink} />
+      </TableCell>
+      <TableCell>
+        <FieldInput field={fieldText || pageInfo?.[0]?.field} onChange={setFieldText} />
+      </TableCell>
+      <TableCell>
+        <LocationInput
+          location={locationText || pageInfo?.[0]?.location}
+          onChange={setLocationText}
+        />
+      </TableCell>
+
+      <TableCell>
+        <Button
+          variant="outlined"
+          key={pageId}
+          disabled={!!pageInfo.length}
+          onClick={(e) => handleInstall(e, pageId, access_token)}>
+          Install Bot
+        </Button>
+      </TableCell>
+      <TableCell>
+        <Button
+          variant="outlined"
+          key={pageId}
+          onClick={(e) =>
+            handleUpdatePageInfo(e, pageId, webhookText, locationText, shopLink, fieldText)
+          }>
+          Save
+        </Button>
+      </TableCell>
     </>
   );
 };
@@ -107,7 +275,7 @@ const App = () => {
   const [user, setUser] = useState<User>();
   const [pages, setPages] = useState<PageData[]>([]);
   const [error, setError] = useState<any>(null);
-  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+  const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
 
   const getWebhooks = useCallback(async (userId: string) => {
     try {
@@ -119,7 +287,7 @@ const App = () => {
       });
       const { data } = response;
 
-      setWebhooks(data.pages);
+      setPageInfos(data.pages);
     } catch (error: any) {
       alert(error.message);
     }
@@ -139,7 +307,7 @@ const App = () => {
     setError(response);
   };
 
-  const HandleInstall = useCallback(
+  const handleInstall = useCallback(
     async (
       event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
       page_id: string,
@@ -171,25 +339,42 @@ const App = () => {
     [getWebhooks, user],
   );
 
-  const RenderWebhook = useCallback(
-    (pageId: string, access_token: string) => {
-      const webhook = webhooks?.filter((webhook) => webhook.page_id === pageId);
-      if (!webhook.length || !webhook) {
-        return (
-          <Button
-            variant="outlined"
-            key={pageId}
-            onClick={(e) => HandleInstall(e, pageId, access_token)}>
-            Install Bot
-          </Button>
-        );
+  const handleUpdatePageInfo = useCallback(
+    async (
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      page_id: string,
+      webhookText?: string,
+      locationText?: string,
+      shopLink?: string,
+      fieldText?: string,
+    ) => {
+      event.preventDefault();
+      if (!webhookText || !locationText || !shopLink || !fieldText) {
+        return;
       }
 
-      return (
-        <WebhookInput webhook={webhook[0].webhook} access_token={access_token} page_id={pageId} />
-      );
+      const payload = {
+        page_webhook_url: webhookText,
+        page_id: page_id,
+        location: locationText,
+        field: fieldText,
+        shop_link: shopLink,
+      };
+
+      try {
+        const response = await axios.post(URL + "set_webhook_url", {
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const { token } = response.data;
+        alert("Đây là access token của server page " + token);
+      } catch (error) {
+        console.error(error);
+      }
     },
-    [HandleInstall, webhooks],
+    [],
   );
 
   useEffect(() => {
@@ -199,53 +384,69 @@ const App = () => {
   }, [getWebhooks, user]);
 
   return (
-    <div className="App">
-      {user && pages ? (
-        <TableContainer
-          style={{
-            height: "50vh",
-            width: "50vw",
-            display: "flex",
-            alignContent: "center",
-            alignItems: "center",
-            justifyContent: "center",
-            marginLeft: "25%",
-            paddingTop: "10%",
-          }}>
-          <Table>
-            <TableHead>
-              <TableCell>Name</TableCell>
-              <TableCell>WebHook</TableCell>
-            </TableHead>
-            <TableBody>
-              {pages.map((page: any) => (
-                <TableRow key={page.id}>
-                  <TableCell>
-                    <a
-                      href={`https://www.facebook.com/${page.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      {page.name}
-                    </a>
-                  </TableCell>
-                  <TableCell>{RenderWebhook(page.id, page.access_token)}</TableCell>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        {user && pages ? (
+          <TableContainer
+            style={{
+              display: "flex",
+              alignContent: "center",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>WebHook</TableCell>
+                  <TableCell>Shop Link</TableCell>
+                  <TableCell>Field</TableCell>
+                  <TableCell>Location</TableCell>
+                  <TableCell>Install ChatBot</TableCell>
+                  <TableCell>Update</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <></>
-      )}
-      {!user ? (
-        <header className="App-header">
-          <FacebookButton onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />
-        </header>
-      ) : (
-        <></>
-      )}
-      {error ? <p>{error.message}</p> : <></>}
-    </div>
+              </TableHead>
+              <TableBody>
+                {pages.map((page: PageData) => (
+                  <TableRow key={page.id}>
+                    <TableCell>
+                      <a
+                        href={`https://www.facebook.com/${page.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        {page.name}
+                      </a>
+                    </TableCell>
+                    <RenderPageInfo
+                      access_token={page.access_token}
+                      handleInstall={handleInstall}
+                      handleUpdatePageInfo={handleUpdatePageInfo}
+                      pageId={page.id}
+                      pageInfos={pageInfos}
+                      key={page.id}
+                    />
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <></>
+        )}
+        {!user ? (
+          <header className="App-header">
+            <FacebookButton
+              onLoginSuccess={handleLoginSuccess}
+              onLoginFailure={handleLoginFailure}
+            />
+          </header>
+        ) : (
+          <></>
+        )}
+        {error ? <p>{error.message}</p> : <></>}
+      </div>
+    </ThemeProvider>
   );
 };
 
