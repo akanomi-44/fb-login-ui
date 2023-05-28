@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 import { AccountResponse, PageData, User } from "./schema";
@@ -208,7 +208,10 @@ const RenderPageInfo = ({
   const [shopLink, setShopLink] = useState<string | undefined>();
   const [fieldText, setFieldText] = useState<string | undefined>();
 
-  const pageInfo = pageInfos?.filter((webhook) => webhook.page_id === pageId);
+  const pageInfo = useMemo(
+    () => pageInfos?.filter((webhook) => webhook.page_id === pageId),
+    [pageId, pageInfos],
+  );
 
   return (
     <>
@@ -241,8 +244,21 @@ const RenderPageInfo = ({
         <Button
           variant="outlined"
           key={pageId}
+          disabled={
+            !(webhookText || pageInfo?.[0]?.webhook) &&
+            !(locationText || pageInfo?.[0]?.location) &&
+            !(shopLink || pageInfo?.[0]?.shop_link) &&
+            !(fieldText || pageInfo?.[0]?.field)
+          }
           onClick={(e) =>
-            handleUpdatePageInfo(e, pageId, webhookText, locationText, shopLink, fieldText)
+            handleUpdatePageInfo(
+              e,
+              pageId,
+              webhookText || pageInfo?.[0]?.webhook,
+              locationText || pageInfo?.[0]?.location,
+              shopLink || pageInfo?.[0]?.shop_link,
+              fieldText || pageInfo?.[0]?.field,
+            )
           }>
           Save
         </Button>
