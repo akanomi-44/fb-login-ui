@@ -213,7 +213,7 @@ const RenderPageInfo = ({
   return (
     <>
       <TableCell>
-        <WebhookInput webhook={webhookText || pageInfo[0].webhook} onChange={setWebhookText} />
+        <WebhookInput webhook={webhookText || pageInfo?.[0]?.webhook} onChange={setWebhookText} />
       </TableCell>
       <TableCell>
         <ShopLinkInput shop_link={shopLink || pageInfo?.[0]?.shop_link} onChange={setShopLink} />
